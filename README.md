@@ -48,7 +48,3 @@ dotnet watch run
 - **C#**: Un lenguaje de programación moderno y de propósito general.
 - **.NET**: Una plataforma de desarrollo gratuita y de código abierto para la creación de diferentes tipos de aplicaciones.
 - **SQL Server**: Un sistema de gestión de bases de datos relacional desarrollado por Microsoft.
-
-[![C#](https://img.shields.io/badge/C%23-12-blue)](https://dotnet.microsoft.com/en-us/languages/csharp)
-[![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-[![SQL Server](https://img.shields.io/badge/SQL_Server-2019-orange)](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
