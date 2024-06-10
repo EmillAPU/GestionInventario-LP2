@@ -1,6 +1,6 @@
-# Sistema de Gestión de Funeraria
+# Sistema de Gestión de Inventario
 
-El **Sistema de Gestión de Funeraria** es una aplicación web desarrollada con .NET que ofrece funcionalidades para la reserva de salas de velatorios de forma online. La aplicación permite a los usuarios reservar salas de velatorio de diferentes categorías y obtener servicios personalizados, junto con la digitalización de la famosa hoja de firmas de velatorios usada en República Dominicana.
+El Sistema de Gestión de Inventario es una aplicación web desarrollada con .NET que ofrece funcionalidades para el seguimiento y control de inventario de productos en almacenes. La aplicación permite a los usuarios gestionar el stock de productos, realizar ajustes de inventario, y generar informes detallados sobre el estado y movimiento de los productos.
 
 ## Configuración del Entorno
 
@@ -8,7 +8,7 @@ El **Sistema de Gestión de Funeraria** es una aplicación web desarrollada con 
 
 - C# (versión 12).
 - .NET (versión 8.0).
-- SQL Server (versión 2019).
+- SQL Server (versión 2018).
 
 ### Instalación
 
@@ -22,13 +22,13 @@ cd Proyecto
 2. Clonar el repositorio:
 
 ```sh
-git clone https://github.com/josearmandosm/Sistema-Gestion-Funeraria-LP2-.git
+git clone https://github.com/EmillAPU/GestionInventario-LP2.git
 ```
 
 3. Navegar al directorio del proyecto:
 
 ```sh
-cd 'Sistema Gestion Funeraria (LP2)'
+cd 'GestionInventario-LP2'
 ```
 
 4. Restaurar los paquetes NuGet si es necesario:
