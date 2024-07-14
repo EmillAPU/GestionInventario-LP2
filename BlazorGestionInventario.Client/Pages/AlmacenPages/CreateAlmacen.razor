@@ -1,0 +1,35 @@
+﻿@page "/almacens/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AlmacenDTO
+@inject IAlmacenService AlmacenService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Nuevo Almacén</h3>
+
+<div class="form-group">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" class="form-control" @bind="nuevoAlmacen.Nombre" />
+</div>
+
+<div class="form-group">
+    <label for="ubicacion">Ubicación:</label>
+    <input type="text" id="ubicacion" class="form-control" @bind="nuevoAlmacen.Direccion" />
+</div>
+
+<button class="btn btn-primary" @onclick="CrearAlmacen">Guardar</button>
+<button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+
+@code {
+    private AlmacenInsertDTO nuevoAlmacen = new AlmacenInsertDTO();
+
+    private async Task CrearAlmacen()
+    {
+        await AlmacenService.CreateAlmacen(nuevoAlmacen);
+        NavigationManager.NavigateTo("/almacens");
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/almacens");
+    }
+}

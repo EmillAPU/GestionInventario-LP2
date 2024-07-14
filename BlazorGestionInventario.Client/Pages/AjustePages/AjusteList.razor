@@ -1,0 +1,72 @@
+﻿@page "/ajustes"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AjusteDTO
+@inject IAjusteService AjusteService
+@inject NavigationManager NavigationManager
+
+<h3>Ajustes</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearAjuste">Crear Nuevo Ajuste</button>
+
+@if (ajustes == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Almacén</th>
+                <th>Cantidad</th>
+                <th>Tipo</th>
+                <th>Motivo</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ajuste in ajustes)
+            {
+                <tr>
+                    <td>@ajuste.IdProducto</td>
+                    <td>@ajuste.IdAlmacen</td>
+                    <td>@ajuste.Cantidad</td>
+                    <td>@ajuste.Tipo</td>
+                    <td>@ajuste.Motivo</td>
+                    <td>@ajuste.Fecha</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarAjuste(ajuste.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarAjuste(ajuste.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<AjusteGetDTO> ajustes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ajustes = await AjusteService.GetAjustes();
+    }
+
+    private void IrACrearAjuste()
+    {
+        NavigationManager.NavigateTo("/ajustes/crear");
+    }
+
+    private void IrAEditarAjuste(int id)
+    {
+        NavigationManager.NavigateTo($"/ajustes/editar/{id}");
+    }
+
+    private async Task EliminarAjuste(int id)
+    {
+        await AjusteService.DeleteAjuste(id);
+        ajustes = await AjusteService.GetAjustes(); // Actualizar la lista de ajustes después de eliminar
+    }
+}

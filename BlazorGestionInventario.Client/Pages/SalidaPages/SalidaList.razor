@@ -1,0 +1,68 @@
+﻿@page "/Salidums"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.SalidumDTO
+@inject ISalidaService SalidaService
+@inject NavigationManager NavigationManager
+
+<h3>Salidas</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearSalida">Crear Nueva Salida</button>
+
+@if (salidas == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IdProducto</th>
+                <th>IdAlmacen</th>
+                <th>Cantidad</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var salida in salidas)
+            {
+                <tr>
+                    <td>@salida.IdProducto</td>
+                    <td>@salida.IdAlmacen</td>
+                    <td>@salida.Cantidad</td>
+                    <td>@salida.Fecha</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarSalida(salida.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarSalida(salida.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<SalidumGetDTO> salidas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        salidas = await SalidaService.GetSalidas();
+    }
+
+    private void IrACrearSalida()
+    {
+        NavigationManager.NavigateTo("/Salidums/crear");
+    }
+
+    private void IrAEditarSalida(int id)
+    {
+        NavigationManager.NavigateTo($"/Salidums/editar/{id}");
+    }
+
+    private async Task EliminarSalida(int id)
+    {
+        await SalidaService.DeleteSalida(id);
+        salidas = await SalidaService.GetSalidas(); // Actualizar la lista de salidas después de eliminar
+    }
+}

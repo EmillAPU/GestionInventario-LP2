@@ -1,0 +1,72 @@
+﻿@page "/Salidums/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProductoDTO
+@using GestionInventario.Share.DTO.SalidumDTO
+@inject ISalidaService SalidaService
+@inject NavigationManager NavigationManager
+
+<h3>Editar Salida</h3>
+
+@if (salida == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@salida" OnValidSubmit="EditarSalida">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="Fecha">Fecha</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="salida.Fecha" />
+        </div>
+
+        <div class="form-group">
+            <label for="Cantidad">Cantidad</label>
+            <InputNumber id="Cantidad" class="form-control" @bind-Value="salida.Cantidad" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdAlmacen">IdAlmacen</label>
+            <InputNumber id="IdAlmacen" class="form-control" @bind-Value="salida.IdAlmacen" />
+        </div>
+
+        <div class="form-group">
+            <label for="ProductoId">Producto</label>
+            <InputSelect id="ProductoId" class="form-control" @bind-Value="salida.IdProducto">
+                @foreach (var producto in productos)
+                {
+                    <option value="@producto.Id">@producto.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private SalidumPutDTO salida;
+    private List<ProductoGetDTO> productos;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var salida = await SalidaService.GetSalida(id);
+        productos = await ObtenerProductos();
+    }
+
+    private async Task<List<ProductoGetDTO>> ObtenerProductos()
+    {
+        // Implementa lógica para obtener la lista de productos del servicio de productos
+        return new List<ProductoGetDTO>(); // Ejemplo, modificar según sea necesario
+    }
+
+    private async Task EditarSalida()
+    {
+        await SalidaService.UpdateSalida(id, salida);
+        NavigationManager.NavigateTo("/Salidums");
+    }
+}

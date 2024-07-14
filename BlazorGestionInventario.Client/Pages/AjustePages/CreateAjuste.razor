@@ -1,0 +1,54 @@
+﻿@page "/ajustes/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AjusteDTO
+@inject IAjusteService AjusteService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Ajuste</h3>
+
+<EditForm Model="@nuevoAjuste" OnValidSubmit="CrearAjuste">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="IdProducto">Producto</label>
+        <InputNumber id="IdProducto" class="form-control" @bind-Value="nuevoAjuste.IdProducto" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdAlmacen">Almacén</label>
+        <InputNumber id="IdAlmacen" class="form-control" @bind-Value="nuevoAjuste.IdAlmacen" />
+    </div>
+
+    <div class="form-group">
+        <label for="Cantidad">Cantidad</label>
+        <InputNumber id="Cantidad" class="form-control" @bind-Value="nuevoAjuste.Cantidad" />
+    </div>
+
+    <div class="form-group">
+        <label for="Tipo">Tipo</label>
+        <InputText id="Tipo" class="form-control" @bind-Value="nuevoAjuste.Tipo" />
+    </div>
+
+    <div class="form-group">
+        <label for="Motivo">Motivo</label>
+        <InputText id="Motivo" class="form-control" @bind-Value="nuevoAjuste.Motivo" />
+    </div>
+
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <InputDate id="Fecha" class="form-control" @bind-Value="nuevoAjuste.Fecha" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    AjusteInsertDTO nuevoAjuste = new AjusteInsertDTO();
+
+    private async Task CrearAjuste()
+    {
+        await AjusteService.CreateAjuste(nuevoAjuste);
+        NavigationManager.NavigateTo("/ajustes");
+    }
+}

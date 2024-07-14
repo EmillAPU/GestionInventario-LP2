@@ -1,0 +1,66 @@
+﻿@page "/Inventarios/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.InventarioDTO
+@inject IInventarioService InventarioService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>Editar Inventario</h3>
+
+@if (inventario == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@inventario" OnValidSubmit="EditarInventario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="IdProducto">Producto</label>
+            <InputNumber id="IdProducto" class="form-control" @bind-Value="inventario.IdProducto" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdAlmacen">Almacén</label>
+            <InputNumber id="IdAlmacen" class="form-control" @bind-Value="inventario.IdAlmacen" />
+        </div>
+
+        <div class="form-group">
+            <label for="Cantidad">Cantidad</label>
+            <InputNumber id="Cantidad" class="form-control" @bind-Value="inventario.CantidadActual" />
+        </div>
+
+        <div class="form-group">
+            <label for="Fecha">Fecha</label>
+            <InputNumber id="Fecha" class="form-control" @bind-Value="inventario.Fecha" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private InventarioPutDTO inventario;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var inventarioGetDto = await InventarioService.GetInventario(id);
+        inventario = new InventarioPutDTO
+            {
+                IdProducto = inventarioGetDto.IdProducto,
+                IdAlmacen = inventarioGetDto.IdAlmacen,
+                CantidadActual = inventarioGetDto.CantidadActual,
+                    Fecha = inventarioGetDto.Fecha
+            };
+    }
+
+    private async Task EditarInventario()
+    {
+        await InventarioService.UpdateInventario(id, inventario);
+        NavigationManager.NavigateTo("/Inventarios");
+    }
+}

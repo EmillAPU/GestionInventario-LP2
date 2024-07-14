@@ -1,0 +1,62 @@
+﻿@page "/Categoriums"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.CategoriumDTO
+@inject ICategoriaService CategoriaService
+@inject NavigationManager NavigationManager
+
+<h3>Categorías</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearCategoria">Crear Nueva Categoría</button>
+
+@if (categorias == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var categoria in categorias)
+            {
+                <tr>
+                    <td>@categoria.Nombre</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarCategoria(categoria.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarCategoria(categoria.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CategoriumGetDTO> categorias;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categorias = await CategoriaService.GetCategorias();
+    }
+
+    private void IrACrearCategoria()
+    {
+        NavigationManager.NavigateTo("/Categoriums/crear");
+    }
+
+    private void IrAEditarCategoria(int id)
+    {
+        NavigationManager.NavigateTo($"/Categoriums/editar/{id}");
+    }
+
+    private async Task EliminarCategoria(int id)
+    {
+        await CategoriaService.DeleteCategoria(id);
+        categorias = await CategoriaService.GetCategorias(); // Actualizar la lista de categorías después de eliminar
+    }
+}

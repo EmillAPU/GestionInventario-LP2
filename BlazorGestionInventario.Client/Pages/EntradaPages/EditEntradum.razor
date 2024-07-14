@@ -1,0 +1,66 @@
+﻿@page "/Entradums/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.EntradumDTO
+@inject IEntradumService EntradumService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>Editar Entrada</h3>
+
+@if (entrada == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@entrada" OnValidSubmit="EditarEntrada">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="IdProducto">Producto</label>
+            <InputNumber id="IdProducto" class="form-control" @bind-Value="entrada.IdProducto" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdAlmacen">Almacén</label>
+            <InputNumber id="IdAlmacen" class="form-control" @bind-Value="entrada.IdAlmacen" />
+        </div>
+
+        <div class="form-group">
+            <label for="Cantidad">Cantidad</label>
+            <InputNumber id="Cantidad" class="form-control" @bind-Value="entrada.Cantidad" />
+        </div>
+
+        <div class="form-group">
+            <label for="Fecha">Fecha</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="entrada.Fecha" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private EntradumPutDTO entrada;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entradaGetDto = await EntradumService.GetEntrada(id);
+        entrada = new EntradumPutDTO
+            {
+                IdProducto = entradaGetDto.IdProducto,
+                IdAlmacen = entradaGetDto.IdAlmacen,
+                Cantidad = entradaGetDto.Cantidad,
+                Fecha = entradaGetDto.Fecha
+            };
+    }
+
+    private async Task EditarEntrada()
+    {
+        await EntradumService.UpdateEntrada(id, entrada);
+        NavigationManager.NavigateTo("/Entradums");
+    }
+}

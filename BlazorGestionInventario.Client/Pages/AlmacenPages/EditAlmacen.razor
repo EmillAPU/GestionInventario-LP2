@@ -1,0 +1,55 @@
+﻿@page "/almacens/editar/{id}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AlmacenDTO
+@inject IAlmacenService AlmacenService
+@inject NavigationManager NavigationManager
+
+<h3>Editar Almacén</h3>
+
+@if (almacen == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" class="form-control" @bind="almacen.Nombre" />
+    </div>
+
+    <div class="form-group">
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="ubicacion" class="form-control" @bind="almacen.Direccion" />
+    </div>
+
+    
+
+    <button class="btn btn-primary" @onclick="ActualizarAlmacen">Guardar</button>
+    <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+}
+
+@code {
+    private AlmacenPutDTO almacen;
+    [Parameter] 
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var almacen = await AlmacenService.GetAlmacen(int.Parse(Id));
+    }
+
+    private async Task ActualizarAlmacen()
+    {
+        await AlmacenService.UpdateAlmacen(almacen.Id, new AlmacenPutDTO
+            {
+                Nombre = almacen.Nombre,
+                Direccion = almacen.Direccion
+            });
+        NavigationManager.NavigateTo("/almacens");
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/almacens");
+    }
+}

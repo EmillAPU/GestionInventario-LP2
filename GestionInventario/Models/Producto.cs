@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GestionInventario.Models;
 
 public partial class Producto
 {
+    [Required]
     public int Id { get; set; }
 
+    [Required]
+    [MaxLength(50)]
     public string Nombre { get; set; } = null!;
 
+    [Required]
+    [MaxLength(250)]
     public string? Descripcion { get; set; }
 
+    [Required]
     public int? IdProveedor { get; set; }
 
+    [Required]
     public int? IdCategoria { get; set; }
 
     public virtual ICollection<Ajuste> Ajustes { get; set; } = new List<Ajuste>();

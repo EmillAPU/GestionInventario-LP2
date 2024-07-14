@@ -1,0 +1,64 @@
+﻿@page "/almacens"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AlmacenDTO
+@inject IAlmacenService AlmacenService
+@inject NavigationManager NavigationManager
+
+<h3>Almacenes</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearAlmacen">Crear Nuevo Almacén</button>
+
+@if (almacenes == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Direccion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var almacen in almacenes)
+            {
+                <tr>
+                    <td>@almacen.Nombre</td>
+                    <td>@almacen.Direccion</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarAlmacen(almacen.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarAlmacen(almacen.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<AlmacenGetDTO> almacenes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        almacenes = await AlmacenService.GetAlmacenes();
+    }
+
+    private void IrACrearAlmacen()
+    {
+        NavigationManager.NavigateTo("/almacens/crear");
+    }
+
+    private void IrAEditarAlmacen(int id)
+    {
+        NavigationManager.NavigateTo($"/almacens/editar/{id}");
+    }
+
+    private async Task EliminarAlmacen(int id)
+    {
+        await AlmacenService.DeleteAlmacen(id);
+        almacenes = await AlmacenService.GetAlmacenes(); // Actualizar la lista de almacenes después de eliminar
+    }
+}

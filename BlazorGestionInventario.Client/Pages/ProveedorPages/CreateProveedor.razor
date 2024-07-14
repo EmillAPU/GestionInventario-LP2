@@ -1,0 +1,34 @@
+﻿@page "/Proveedors/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProveedorDTO
+@inject IProveedorService ProveedorService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Proveedor</h3>
+
+<EditForm Model="@nuevoProveedor" OnValidSubmit="CrearProveedor">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Nombre">Nombre</label>
+        <InputText id="Nombre" class="form-control" @bind-Value="nuevoProveedor.Nombre" />
+    </div>
+
+    <div class="form-group">
+        <label for="Contacto">Contacto</label>
+        <InputText id="Contacto" class="form-control" @bind-Value="nuevoProveedor.Contacto" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    ProveedorInsertDTO nuevoProveedor = new ProveedorInsertDTO();
+
+    private async Task CrearProveedor()
+    {
+        await ProveedorService.CreateProveedor(nuevoProveedor);
+        NavigationManager.NavigateTo("/Proveedors");
+    }
+}

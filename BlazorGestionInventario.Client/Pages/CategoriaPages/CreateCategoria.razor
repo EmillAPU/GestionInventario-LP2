@@ -1,0 +1,31 @@
+﻿@page "/Categoriums/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.CategoriumDTO
+@inject ICategoriaService CategoriaService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Categoría</h3>
+
+<EditForm Model="@nuevaCategoria" OnValidSubmit="CrearCategoria">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Nombre">Nombre</label>
+        <InputText id="Nombre" class="form-control" @bind-Value="nuevaCategoria.Nombre" />
+    </div>
+
+    
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    CategoriumInsertDTO nuevaCategoria = new CategoriumInsertDTO();
+
+    private async Task CrearCategoria()
+    {
+        await CategoriaService.CreateCategoria(nuevaCategoria);
+        NavigationManager.NavigateTo("/Categoriums");
+    }
+}

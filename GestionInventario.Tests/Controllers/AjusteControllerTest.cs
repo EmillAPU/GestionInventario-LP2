@@ -2,15 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionInventario.Controllers;
-using GestionInventario.DTO;
-using GestionInventario.DTO.AjusteDTO;
-using GestionInventario.DTO.AlmacenDTO;
-using GestionInventario.DTO.ProductoDTO;
+using GestionInventario.Share.DTO.AjusteDTO;
 using GestionInventario.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using Gestion_de_Hospitales.UnitTest; // Agrega el namespace para los atributos de las pruebas unitarias
 
 namespace GestionInventario.UnitTest
 {
@@ -30,24 +28,24 @@ namespace GestionInventario.UnitTest
         {
             var productos = new List<Producto>
             {
-                new Producto { Nombre = "Producto A" },
-                new Producto { Nombre = "Producto B" }
+                new Producto { Nombre = "Producto A", Descripcion = "Descripcion A", IdCategoria = 1, IdProveedor = 1 },
+                new Producto { Nombre = "Producto B", Descripcion = "Descripcion B", IdCategoria = 1, IdProveedor = 1 }
             };
             _fixture.Context.Productos.AddRange(productos);
             _fixture.Context.SaveChanges();
 
             var almacenes = new List<Almacen>
             {
-                new Almacen { Nombre = "Almacen A" },
-                new Almacen { Nombre = "Almacen B" }
+                new Almacen { Nombre = "Almacen A", Direccion = "Direccion A" },
+                new Almacen { Nombre = "Almacen B", Direccion = "Direccion B" }
             };
             _fixture.Context.Almacens.AddRange(almacenes);
             _fixture.Context.SaveChanges();
 
             var ajustes = new List<Ajuste>
             {
-                new Ajuste { IdProducto = 1, IdAlmacen = 1, Cantidad = 10, Tipo = "Entrada", Fecha = DateOnly.FromDateTime(DateTime.Now) },
-                new Ajuste { IdProducto = 2, IdAlmacen = 2, Cantidad = 5, Tipo = "Salida", Fecha = DateOnly.FromDateTime(DateTime.Now) }
+                new Ajuste { IdProducto = 1, IdAlmacen = 1, Cantidad = 10, Tipo = "Entrada", Motivo = "Motivo A", Fecha = DateOnly.FromDateTime(DateTime.Now) },
+                new Ajuste { IdProducto = 2, IdAlmacen = 2, Cantidad = 5, Tipo = "Salida", Motivo = "Motivo B", Fecha = DateOnly.FromDateTime(DateTime.Now) }
             };
             _fixture.Context.Ajustes.AddRange(ajustes);
             _fixture.Context.SaveChanges();
@@ -64,17 +62,13 @@ namespace GestionInventario.UnitTest
 
             // Assert
             Xunit.Assert.IsType<OkObjectResult>(result.Result);
-
-            // Verificar que el valor devuelto no es nulo
             Xunit.Assert.NotNull(result.Result);
 
-            // Verificar los datos devueltos
             var okResult = result.Result as OkObjectResult;
             Xunit.Assert.NotNull(okResult);
 
             var ajustes = okResult.Value as IEnumerable<AjusteGetDTO>;
             Xunit.Assert.NotNull(ajustes);
-
             Xunit.Assert.Equal(2, ajustes.Count()); // Verificar que se devuelvan todos los ajustes
         }
 
@@ -83,7 +77,7 @@ namespace GestionInventario.UnitTest
         {
             // Arrange
             Setup();
-            var ajusteDto = new AjusteInsertDTO { IdProducto = 1, IdAlmacen = 2, Cantidad = 15, Tipo = "Entrada", Fecha = DateOnly.FromDateTime(DateTime.Now) };
+            var ajusteDto = new AjusteInsertDTO { IdProducto = 1, IdAlmacen = 2, Cantidad = 15, Tipo = "Entrada", Motivo = "Motivo C", Fecha = DateOnly.FromDateTime(DateTime.Now) };
 
             // Act
             var result = await _controller.PostAjuste(ajusteDto);
@@ -98,7 +92,7 @@ namespace GestionInventario.UnitTest
         {
             // Arrange
             Setup();
-            var ajusteInsertDto = new AjusteInsertDTO { IdProducto = 1, IdAlmacen = 1, Cantidad = 20, Tipo = "Entrada", Fecha = DateOnly.FromDateTime(DateTime.Now) };
+            var ajusteInsertDto = new AjusteInsertDTO { IdProducto = 1, IdAlmacen = 1, Cantidad = 20, Tipo = "Entrada", Motivo = "Motivo D", Fecha = DateOnly.FromDateTime(DateTime.Now) };
             await _controller.PostAjuste(ajusteInsertDto);
 
             // Desatachar la entidad que se acaba de insertar para evitar conflictos
@@ -108,10 +102,10 @@ namespace GestionInventario.UnitTest
                 _fixture.Context.Entry(insertedAjuste).State = EntityState.Detached;
             }
 
-            var ajusteDto = new AjustePutDTO { Id = 3, IdProducto = 2, IdAlmacen = 2, Cantidad = 25, Tipo = "Salida", Fecha = DateOnly.FromDateTime(DateTime.Now) };
+            var ajusteDto = new AjustePutDTO { Id = insertedAjuste.Id, IdProducto = 2, IdAlmacen = 2, Cantidad = 25, Tipo = "Salida", Motivo = "Motivo E", Fecha = DateOnly.FromDateTime(DateTime.Now) };
 
             // Act
-            var result = await _controller.PutAjuste(3, ajusteDto);
+            var result = await _controller.PutAjuste(insertedAjuste.Id, ajusteDto);
 
             // Assert
             Xunit.Assert.IsType<NoContentResult>(result);
@@ -120,14 +114,12 @@ namespace GestionInventario.UnitTest
         [Fact]
         public async Task DeleteAjuste_ReturnsNoContent_WithValidId()
         {
-            // Act
+            // Arrange
             Setup();
             var result = await _controller.DeleteAjuste(1);
 
             // Assert
             Xunit.Assert.IsType<NoContentResult>(result);
         }
-
-        // Agrega más pruebas según sea necesario...
     }
 }

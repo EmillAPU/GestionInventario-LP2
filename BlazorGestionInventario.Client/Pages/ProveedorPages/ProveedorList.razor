@@ -1,0 +1,64 @@
+﻿@page "/Proveedors"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProveedorDTO
+@inject IProveedorService ProveedorService
+@inject NavigationManager NavigationManager
+
+<h3>Proveedores</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearProveedor">Crear Nuevo Proveedor</button>
+
+@if (proveedores == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Contacto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var proveedor in proveedores)
+            {
+                <tr>
+                    <td>@proveedor.Nombre</td>
+                    <td>@proveedor.Contacto</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarProveedor(proveedor.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarProveedor(proveedor.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ProveedorGetDTO> proveedores;
+
+    protected override async Task OnInitializedAsync()
+    {
+        proveedores = await ProveedorService.GetProveedors();
+    }
+
+    private void IrACrearProveedor()
+    {
+        NavigationManager.NavigateTo("/Proveedors/crear");
+    }
+
+    private void IrAEditarProveedor(int id)
+    {
+        NavigationManager.NavigateTo($"/Proveedors/editar/{id}");
+    }
+
+    private async Task EliminarProveedor(int id)
+    {
+        await ProveedorService.DeleteProveedor(id);
+        proveedores = await ProveedorService.GetProveedors(); // Actualizar la lista de proveedores después de eliminar
+    }
+}

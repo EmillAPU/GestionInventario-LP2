@@ -1,0 +1,44 @@
+﻿@page "/Inventarios/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.InventarioDTO
+@inject IInventarioService InventarioService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Inventario</h3>
+
+<EditForm Model="@nuevoInventario" OnValidSubmit="CrearInventario">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="IdProducto">Producto</label>
+        <InputNumber id="IdProducto" class="form-control" @bind-Value="nuevoInventario.IdProducto" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdAlmacen">Almacén</label>
+        <InputNumber id="IdAlmacen" class="form-control" @bind-Value="nuevoInventario.IdAlmacen" />
+    </div>
+
+    <div class="form-group">
+        <label for="Cantidad">Cantidad</label>
+        <InputNumber id="Cantidad" class="form-control" @bind-Value="nuevoInventario.CantidadActual" />
+    </div>
+
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <InputNumber id="Fecha" class="form-control" @bind-Value="nuevoInventario.Fecha" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    InventarioInsertDTO nuevoInventario = new InventarioInsertDTO();
+
+    private async Task CrearInventario()
+    {
+        await InventarioService.CreateInventario(nuevoInventario);
+        NavigationManager.NavigateTo("/Inventarios");
+    }
+}

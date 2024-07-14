@@ -1,0 +1,78 @@
+﻿@page "/ajustes/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.AjusteDTO
+@inject IAjusteService AjusteService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>Editar Ajuste</h3>
+
+@if (ajuste == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@ajuste" OnValidSubmit="EditarAjuste">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="IdProducto">Producto</label>
+            <InputNumber id="IdProducto" class="form-control" @bind-Value="ajuste.IdProducto" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdAlmacen">Almacén</label>
+            <InputNumber id="IdAlmacen" class="form-control" @bind-Value="ajuste.IdAlmacen" />
+        </div>
+
+        <div class="form-group">
+            <label for="Cantidad">Cantidad</label>
+            <InputNumber id="Cantidad" class="form-control" @bind-Value="ajuste.Cantidad" />
+        </div>
+
+        <div class="form-group">
+            <label for="Tipo">Tipo</label>
+            <InputText id="Tipo" class="form-control" @bind-Value="ajuste.Tipo" />
+        </div>
+
+        <div class="form-group">
+            <label for="Motivo">Motivo</label>
+            <InputText id="Motivo" class="form-control" @bind-Value="ajuste.Motivo" />
+        </div>
+
+        <div class="form-group">
+            <label for="Fecha">Fecha</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="ajuste.Fecha" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private AjustePutDTO ajuste;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ajusteGetDto = await AjusteService.GetAjuste(id);
+        ajuste = new AjustePutDTO
+            {
+                IdProducto = ajusteGetDto.IdProducto,
+                IdAlmacen = ajusteGetDto.IdAlmacen,
+                Cantidad = ajusteGetDto.Cantidad,
+                Tipo = ajusteGetDto.Tipo,
+                Motivo = ajusteGetDto.Motivo,
+                Fecha = ajusteGetDto.Fecha
+            };
+    }
+
+    private async Task EditarAjuste()
+    {
+        await AjusteService.UpdateAjuste(id, ajuste);
+        NavigationManager.NavigateTo("/ajustes");
+    }
+}

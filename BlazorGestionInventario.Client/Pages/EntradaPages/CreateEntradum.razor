@@ -1,0 +1,44 @@
+﻿@page "/Entradums/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.EntradumDTO
+@inject IEntradumService EntradumService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Entrada</h3>
+
+<EditForm Model="@nuevaEntrada" OnValidSubmit="CrearEntrada">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="IdProducto">Producto</label>
+        <InputNumber id="IdProducto" class="form-control" @bind-Value="nuevaEntrada.IdProducto" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdAlmacen">Almacén</label>
+        <InputNumber id="IdAlmacen" class="form-control" @bind-Value="nuevaEntrada.IdAlmacen" />
+    </div>
+
+    <div class="form-group">
+        <label for="Cantidad">Cantidad</label>
+        <InputNumber id="Cantidad" class="form-control" @bind-Value="nuevaEntrada.Cantidad" />
+    </div>
+
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <InputDate id="Fecha" class="form-control" @bind-Value="nuevaEntrada.Fecha" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    EntradumInsertDTO nuevaEntrada = new EntradumInsertDTO();
+
+    private async Task CrearEntrada()
+    {
+        await EntradumService.CreateEntrada(nuevaEntrada);
+        NavigationManager.NavigateTo("/Entradums");
+    }
+}

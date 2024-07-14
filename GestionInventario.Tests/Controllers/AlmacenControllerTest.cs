@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionInventario.Controllers;
-using GestionInventario.DTO;
-using GestionInventario.DTO.AlmacenDTO;
+using GestionInventario.Share.DTO.AlmacenDTO;
 using GestionInventario.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using Gestion_de_Hospitales.UnitTest; // Agrega el namespace para los atributos de las pruebas unitarias
 
 namespace GestionInventario.UnitTest
 {
@@ -26,21 +26,12 @@ namespace GestionInventario.UnitTest
         [Fact]
         public void Setup()
         {
-
             var almacenes = new List<Almacen>
             {
-                new Almacen { Nombre = "Almacén Santo Domingo" },
-                new Almacen { Nombre = "Almacén Santiago" }
+                new Almacen { Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo" },
+                new Almacen { Nombre = "Almacén Santiago", Direccion = "Calle Norte, Santiago" }
             };
             _fixture.Context.Almacens.AddRange(almacenes);
-            _fixture.Context.SaveChanges();
-
-            var almacen = new List<Almacen>
-            {
-                new Almacen { Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo"},
-                new Almacen { Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo"}
-            };
-            _fixture.Context.Ajustes.AddRange();
             _fixture.Context.SaveChanges();
         }
 
@@ -55,18 +46,14 @@ namespace GestionInventario.UnitTest
 
             // Assert
             Xunit.Assert.IsType<OkObjectResult>(result.Result);
-
-            // Verificar que el valor devuelto no es nulo
             Xunit.Assert.NotNull(result.Result);
 
-            // Verificar los datos devueltos
             var okResult = result.Result as OkObjectResult;
             Xunit.Assert.NotNull(okResult);
 
-            var ajustes = okResult.Value as IEnumerable<AlmacenGetDTO>;
-            Xunit.Assert.NotNull(ajustes);
-
-            Xunit.Assert.Equal(2, ajustes.Count()); // Verificar que se devuelvan todos los ajustes
+            var almacenes = okResult.Value as IEnumerable<AlmacenGetDTO>;
+            Xunit.Assert.NotNull(almacenes);
+            Xunit.Assert.Equal(2, almacenes.Count()); // Verificar que se devuelvan todos los almacenes
         }
 
         [Fact]
@@ -74,10 +61,10 @@ namespace GestionInventario.UnitTest
         {
             // Arrange
             Setup();
-            var almacenDto = new AlmacenInsertDTO  { Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo"};
+            var almacenDto = new AlmacenInsertDTO { Nombre = "Almacén Puerto Plata", Direccion = "Calle Marítima, Puerto Plata" };
 
-        // Act
-        var result = await _controller.PostAlmacen(almacenDto);
+            // Act
+            var result = await _controller.PostAlmacen(almacenDto);
 
             // Assert
             var okResult = Xunit.Assert.IsType<OkObjectResult>(result.Result);
@@ -89,32 +76,34 @@ namespace GestionInventario.UnitTest
         {
             // Arrange
             Setup();
-            var AlmacenInsertDto = new AlmacenInsertDTO  { Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo"};
-            await _controller.PostAlmacen(AlmacenInsertDto);
+            var almacenInsertDto = new AlmacenInsertDTO { Nombre = "Almacén La Vega", Direccion = "Calle Principal, La Vega" };
+            await _controller.PostAlmacen(almacenInsertDto);
 
             // Desatachar la entidad que se acaba de insertar para evitar conflictos
-            var insertedAlmacen = _fixture.Context.Ajustes.Local.FirstOrDefault(a => a.Cantidad == 20);
+            var insertedAlmacen = _fixture.Context.Almacens.Local.FirstOrDefault(a => a.Nombre == "Almacén La Vega");
             if (insertedAlmacen != null)
             {
                 _fixture.Context.Entry(insertedAlmacen).State = EntityState.Detached;
             }
 
-            var ajusteDto = new AlmacenPutDTO { Id = 1, Nombre = "Almacén Santo Domingo", Direccion = "Calle Central, Santo Domingo"};
+            var almacenDto = new AlmacenPutDTO { Id = insertedAlmacen.Id, Nombre = "Almacén La Vega Modificado", Direccion = "Calle Principal, La Vega" };
 
-           
+            // Act
+            var result = await _controller.PutAlmacen(insertedAlmacen.Id, almacenDto);
+
+            // Assert
+            Xunit.Assert.IsType<NoContentResult>(result);
         }
 
         [Fact]
         public async Task DeleteAlmacen_ReturnsNoContent_WithValidId()
         {
-            // Act
+            // Arrange
             Setup();
             var result = await _controller.DeleteAlmacen(1);
 
             // Assert
             Xunit.Assert.IsType<NoContentResult>(result);
         }
-
-        // Agrega más pruebas según sea necesario...
     }
 }

@@ -1,0 +1,53 @@
+﻿@page "/Proveedors/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProveedorDTO
+@inject IProveedorService ProveedorService
+@inject NavigationManager NavigationManager
+
+<h3>Editar Proveedor</h3>
+
+@if (proveedor == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@proveedor" OnValidSubmit="EditarProveedor">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <InputText id="Nombre" class="form-control" @bind-Value="proveedor.Nombre" />
+        </div>
+
+        <div class="form-group">
+            <label for="Contacto">Contacto</label>
+            <InputText id="Contacto" class="form-control" @bind-Value="proveedor.Contacto" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private ProveedorPutDTO proveedor;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var proveedorGetDto = await ProveedorService.GetProveedor(id);
+        proveedor = new ProveedorPutDTO
+            {
+                Nombre = proveedorGetDto.Nombre,
+                Contacto = proveedorGetDto.Contacto
+            };
+    }
+
+    private async Task EditarProveedor()
+    {
+        await ProveedorService.UpdateProveedor(id, proveedor);
+        NavigationManager.NavigateTo("/Proveedors");
+    }
+}

@@ -1,0 +1,66 @@
+﻿@page "/Productoes/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProductoDTO
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>Editar Producto</h3>
+
+@if (producto == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@producto" OnValidSubmit="EditarProducto">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <InputText id="Nombre" class="form-control" @bind-Value="producto.Nombre" />
+        </div>
+
+        <div class="form-group">
+            <label for="Descripcion">Descripción</label>
+            <InputText id="Descripcion" class="form-control" @bind-Value="producto.Descripcion" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdCategoria">IdCategoria</label>
+            <InputNumber id="IdCategoria" class="form-control" @bind-Value="producto.IdCategoria" />
+        </div>
+
+        <div class="form-group">
+            <label for="IdProveedor">IdProveedor</label>
+            <InputNumber id="IdProveedor" class="form-control" @bind-Value="producto.IdProveedor" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private ProductoPutDTO producto;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var productoGetDto = await ProductoService.GetProducto(id);
+        producto = new ProductoPutDTO
+            {
+                Nombre = productoGetDto.Nombre,
+                Descripcion = productoGetDto.Descripcion,
+                IdCategoria = productoGetDto.IdCategoria,
+                IdProveedor = productoGetDto.IdProveedor
+            };
+    }
+
+    private async Task EditarProducto()
+    {
+        await ProductoService.UpdateProducto(id, producto);
+        NavigationManager.NavigateTo("/Productoes");
+    }
+}

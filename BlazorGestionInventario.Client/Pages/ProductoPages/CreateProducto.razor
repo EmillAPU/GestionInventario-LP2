@@ -1,0 +1,44 @@
+﻿@page "/Productoes/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProductoDTO
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Producto</h3>
+
+<EditForm Model="@nuevoProducto" OnValidSubmit="CrearProducto">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Nombre">Nombre</label>
+        <InputText id="Nombre" class="form-control" @bind-Value="nuevoProducto.Nombre" />
+    </div>
+
+    <div class="form-group">
+        <label for="Descripcion">Descripción</label>
+        <InputText id="Descripcion" class="form-control" @bind-Value="nuevoProducto.Descripcion" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdCategoria">IdCategoria</label>
+        <InputNumber id="IdCategoria" class="form-control" @bind-Value="nuevoProducto.IdCategoria" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdProveedor">IdProveedor</label>
+        <InputNumber id="IdProveedor" class="form-control" @bind-Value="nuevoProducto.IdProveedor" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    ProductoInsertDTO nuevoProducto = new ProductoInsertDTO();
+
+    private async Task CrearProducto()
+    {
+        await ProductoService.CreateProducto(nuevoProducto);
+        NavigationManager.NavigateTo("/Productoes");
+    }
+}

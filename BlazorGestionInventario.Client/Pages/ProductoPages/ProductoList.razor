@@ -1,0 +1,68 @@
+﻿@page "/Productoes"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProductoDTO
+@inject IProductoService ProductoService
+@inject NavigationManager NavigationManager
+
+<h3>Productos</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearProducto">Crear Nuevo Producto</button>
+
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>IdProveedor</th>
+                <th>IdCategoria</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Descripcion</td>
+                    <td>@producto.IdProveedor</td>
+                    <td>@producto.IdCategoria</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarProducto(producto.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarProducto(producto.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ProductoGetDTO> productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ProductoService.GetProductos();
+    }
+
+    private void IrACrearProducto()
+    {
+        NavigationManager.NavigateTo("/Productoes/crear");
+    }
+
+    private void IrAEditarProducto(int id)
+    {
+        NavigationManager.NavigateTo($"/Productoes/editar/{id}");
+    }
+
+    private async Task EliminarProducto(int id)
+    {
+        await ProductoService.DeleteProducto(id);
+        productos = await ProductoService.GetProductos(); // Actualizar la lista de productos después de eliminar
+    }
+}

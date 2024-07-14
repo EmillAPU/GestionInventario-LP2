@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionInventario.Models;
 using AutoMapper;
-using GestionInventario.DTO.SalidumDTO;
+using GestionInventario.Share.DTO.SalidumDTO;
 
 namespace GestionInventario.Controllers
 {

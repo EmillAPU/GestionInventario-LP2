@@ -1,0 +1,68 @@
+﻿@page "/Inventarios"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.InventarioDTO
+@inject IInventarioService InventarioService
+@inject NavigationManager NavigationManager
+
+<h3>Inventarios</h3>
+
+<button class="btn btn-primary" @onclick="IrACrearInventario">Crear Nuevo Inventario</button>
+
+@if (inventarios == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Almacén</th>
+                <th>CantidadActual</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inventario in inventarios)
+            {
+                <tr>
+                    <td>@inventario.IdProducto</td>
+                    <td>@inventario.IdAlmacen</td>
+                    <td>@inventario.CantidadActual</td>
+                    <td>@inventario.Fecha</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => IrAEditarInventario(inventario.Id)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => EliminarInventario(inventario.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<InventarioGetDTO> inventarios;
+
+    protected override async Task OnInitializedAsync()
+    {
+        inventarios = await InventarioService.GetInventarios();
+    }
+
+    private void IrACrearInventario()
+    {
+        NavigationManager.NavigateTo("/Inventarios/crear");
+    }
+
+    private void IrAEditarInventario(int id)
+    {
+        NavigationManager.NavigateTo($"/Inventarios/editar/{id}");
+    }
+
+    private async Task EliminarInventario(int id)
+    {
+        await InventarioService.DeleteInventario(id);
+        inventarios = await InventarioService.GetInventarios(); // Actualizar la lista de inventarios después de eliminar
+    }
+}

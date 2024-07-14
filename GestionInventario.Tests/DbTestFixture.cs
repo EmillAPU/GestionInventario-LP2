@@ -6,7 +6,7 @@ using GestionInventario.DTO;
 using GestionInventario.Models;
 using System;
 
-namespace Gestion_de_Hospitales.UnitTest
+namespace GestionInventario.UnitTest
 {
     public class DbTestFixture<TContext> : IDisposable where TContext : DbContext
     {

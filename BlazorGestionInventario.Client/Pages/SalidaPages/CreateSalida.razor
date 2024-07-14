@@ -1,0 +1,62 @@
+﻿@page "/Salidums/crear"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.ProductoDTO
+@using GestionInventario.Share.DTO.SalidumDTO
+@inject ISalidaService SalidaService
+@inject NavigationManager NavigationManager
+
+<h3>Crear Salida</h3>
+
+<EditForm Model="@nuevaSalida" OnValidSubmit="CrearSalida">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Fecha">Fecha</label>
+        <InputDate id="Fecha" class="form-control" @bind-Value="nuevaSalida.Fecha" />
+    </div>
+
+    <div class="form-group">
+        <label for="Cantidad">Cantidad</label>
+        <InputNumber id="Cantidad" class="form-control" @bind-Value="nuevaSalida.Cantidad" />
+    </div>
+
+    <div class="form-group">
+        <label for="IdAlmacen">IdAlmacen</label>
+        <InputNumber id="IdAlmacen" class="form-control" @bind-Value="nuevaSalida.IdAlmacen" />
+    </div>
+
+    <div class="form-group">
+        <label for="ProductoId">Producto</label>
+        <InputSelect id="ProductoId" class="form-control" @bind-Value="nuevaSalida.IdProducto">
+            @foreach (var producto in productos)
+            {
+                <option value="@producto.Id">@producto.Nombre</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    SalidumInsertDTO nuevaSalida = new SalidumInsertDTO();
+    private List<ProductoGetDTO> productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ObtenerProductos();
+    }
+
+    private async Task<List<ProductoGetDTO>> ObtenerProductos()
+    {
+        // Implementa lógica para obtener la lista de productos del servicio de productos
+        return new List<ProductoGetDTO>(); // Ejemplo, modificar según sea necesario
+    }
+
+    private async Task CrearSalida()
+    {
+        await SalidaService.CreateSalida(nuevaSalida);
+        NavigationManager.NavigateTo("/Salidums");
+    }
+}

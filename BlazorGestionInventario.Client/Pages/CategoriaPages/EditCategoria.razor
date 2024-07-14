@@ -1,0 +1,47 @@
+﻿@page "/Categoriums/editar/{id:int}"
+@using BlazorGestionInventario.Client
+@using GestionInventario.Share.DTO.CategoriumDTO
+@inject ICategoriaService CategoriaService
+@inject NavigationManager NavigationManager
+
+<h3>Editar Categoría</h3>
+
+@if (categoria == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="@categoria" OnValidSubmit="EditarCategoria">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <InputText id="Nombre" class="form-control" @bind-Value="categoria.Nombre" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    private CategoriumPutDTO categoria;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var categoriaGetDto = await CategoriaService.GetCategoria(id);
+        categoria = new CategoriumPutDTO
+            {
+                Nombre = categoriaGetDto.Nombre
+            };
+    }
+
+    private async Task EditarCategoria()
+    {
+        await CategoriaService.UpdateCategoria(id, categoria);
+        NavigationManager.NavigateTo("/Categoriums");
+    }
+}
